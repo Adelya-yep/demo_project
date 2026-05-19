@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .models import Application, Profile, Review
-from .forms import RegisterForm, ApplicationForm, ReviewForm, StatusUpdateForm
+from .models import Application, Profile
+from .forms import RegisterForm
 
 
 def index(request):
@@ -53,3 +53,30 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('index')
+
+
+@login_required
+def dashboard(request):
+    applications = Application.objects.filter(user=request.user)
+    context = {
+        'applications': applications,
+    }
+    return render(request, 'dashboard.html', context)
+
+
+@login_required
+def application_create(request):
+    if request.user.username == 'Admin26':
+        messages.error(request, 'Администратор не может создавать заявки')
+        return redirect('manager')
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.user = request.user
+            application.save()
+            messages.success(request, 'Заявка успешно создана!')
+            return redirect('dashboard')
+    else:
+        form = ApplicationForm()
+    return render(request, 'application_form.html', {'form': form})

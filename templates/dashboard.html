@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold">Здравствуйте, {{ user.profile.full_name }}!</h2>
+        <p class="text-muted">Добро пожаловать в личный кабинет портала «Учусь РФ»</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div id="slider" class="slider">
+                    <div class="slider-inner">
+                        <div class="slide active">
+                            <img src="{% static 'img/slide1.jpg' %}" alt="Обучение" class="slide-img">
+                        </div>
+                        <div class="slide">
+                            <img src="{% static 'img/slide2.jpg' %}" alt="Курсы" class="slide-img">
+                        </div>
+                        <div class="slide">
+                            <img src="{% static 'img/slide3.jpg' %}" alt="Знания" class="slide-img">
+                        </div>
+                        <div class="slide">
+                            <img src="{% static 'img/slide4.jpg' %}" alt="Развитие" class="slide-img">
+                        </div>
+                    </div>
+                    <button class="slider-btn slider-prev" onclick="prevSlide()">&#10094;</button>
+                    <button class="slider-btn slider-next" onclick="nextSlide()">&#10095;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">Мои заявки</h4>
+    {% if user.username != 'Admin26' %}
+        <a href="{% url 'application_create' %}" class="btn btn-primary">Новая заявка</a>
+    {% endif %}
+</div>
+
+{% if applications %}
+    <div class="row">
+        {% for app in applications %}
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ app.get_course_type_display }}</h5>
+                        <p class="card-text mb-1">
+                            <span class="badge {% if app.status == 'new' %}badge-new{% elif app.status == 'in_progress' %}badge-progress{% else %}badge-done{% endif %}">
+                                {{ app.get_status_display }}
+                            </span>
+                        </p>
+                        <p class="card-text small text-muted mb-1">Дата начала: {{ app.start_date|date:"d.m.Y" }}</p>
+                        <p class="card-text small text-muted mb-1">Способ оплаты: {{ app.get_payment_method_display }}</p>
+                        <p class="card-text small text-muted">Создана: {{ app.created_at|date:"d.m.Y H:i" }}</p>
+                        {% if app.status == 'completed' and not app.review %}
+                            <a href="{% url 'review_create' app.id %}" class="btn btn-outline-primary btn-sm">Оставить отзыв</a>
+                        {% endif %}
+                        {% if app.review %}
+                            <p class="small text-muted mt-2 mb-0">✓ Отзыв оставлен</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <p class="text-muted mb-3">У вас пока нет заявок</p>
+            {% if user.username != 'Admin26' %}
+                <a href="{% url 'application_create' %}" class="btn btn-primary">Создать первую заявку</a>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
