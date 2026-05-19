@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Панель управления{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Панель управления заявками</h2>
+    <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">Выйти</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-12 col-md-4">
+                <label class="form-label">Фильтр по статусу</label>
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="">Все статусы</option>
+                    {% for key, label in status_choices %}
+                        <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label">Сортировка</label>
+                <select name="sort" class="form-select" onchange="this.form.submit()">
+                    <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Новые сверху</option>
+                    <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Старые сверху</option>
+                    <option value="start_date" {% if sort_by == 'start_date' %}selected{% endif %}>По дате начала</option>
+                    <option value="-start_date" {% if sort_by == '-start_date' %}selected{% endif %}>По дате начала (убыв.)</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-4">
+                <a href="{% url 'manager' %}" class="btn btn-outline-secondary w-100">Сбросить фильтры</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="d-none d-md-block">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead style="background-color: #DBEAFE;">
+                <tr>
+                    <th>ID</th>
+                    <th>Пользователь</th>
+                    <th>ФИО</th>
+                    <th>Телефон</th>
+                    <th>Email</th>
+                    <th>Тип курса</th>
+                    <th>Дата начала</th>
+                    <th>Оплата</th>
+                    <th>Статус</th>
+                    <th>Дата создания</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in page_obj %}
+                    <tr>
+                        <td>{{ app.id }}</td>
+                        <td>{{ app.user.username }}</td>
+                        <td>{{ app.user.profile.full_name }}</td>
+                        <td>{{ app.user.profile.phone }}</td>
+                        <td>{{ app.user.email }}</td>
+                        <td>{{ app.get_course_type_display }}</td>
+                        <td>{{ app.start_date|date:"d.m.Y" }}</td>
+                        <td>{{ app.get_payment_method_display }}</td>
+                        <td>
+                            <span class="badge {% if app.status == 'new' %}badge-new{% elif app.status == 'in_progress' %}badge-progress{% else %}badge-done{% endif %}">
+                                {{ app.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ app.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            <form method="post" class="d-flex gap-1">
+                                {% csrf_token %}
+                                <input type="hidden" name="application_id" value="{{ app.id }}">
+                                <select name="status" class="form-select form-select-sm" style="width:auto;">
+                                    {% for key, label in status_choices %}
+                                        <option value="{{ key }}" {% if app.status == key %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm">Сохранить</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-4">Заявок нет</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="d-block d-md-none">
+    {% for app in page_obj %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="fw-bold mb-0">#{{ app.id }} — {{ app.get_course_type_display }}</h6>
+                    <span class="badge {% if app.status == 'new' %}badge-new{% elif app.status == 'in_progress' %}badge-progress{% else %}badge-done{% endif %}">
+                        {{ app.get_status_display }}
+                    </span>
+                </div>
+                <table class="table table-sm table-borderless mb-2">
+                    <tr>
+                        <td class="text-muted ps-0 py-1">Пользователь</td>
+                        <td class="py-1">{{ app.user.username }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-0 py-1">ФИО</td>
+                        <td class="py-1">{{ app.user.profile.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-0 py-1">Телефон</td>
+                        <td class="py-1">{{ app.user.profile.phone }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-0 py-1">Email</td>
+                        <td class="py-1">{{ app.user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-0 py-1">Дата начала</td>
+                        <td class="py-1">{{ app.start_date|date:"d.m.Y" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-0 py-1">Оплата</td>
+                        <td class="py-1">{{ app.get_payment_method_display }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted ps-0 py-1">Создана</td>
+                        <td class="py-1">{{ app.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                </table>
+                <form method="post" class="d-flex gap-1">
+                    {% csrf_token %}
+                    <input type="hidden" name="application_id" value="{{ app.id }}">
+                    <select name="status" class="form-select form-select-sm">
+                        {% for key, label in status_choices %}
+                            <option value="{{ key }}" {% if app.status == key %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    {% empty %}
+        <div class="card shadow-sm">
+            <div class="card-body text-center text-muted py-4">Заявок нет</div>
+        </div>
+    {% endfor %}
+</div>
+<nav class="mt-4">
+    <ul class="pagination justify-content-center flex-wrap">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Первая</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Назад</a>
+            </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Вперёд</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Последняя</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+{% endblock %}

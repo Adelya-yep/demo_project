@@ -1,6 +1,8 @@
 import re
 from django import forms
 from django.contrib.auth.models import User
+from django.utils import timezone
+from .models import Application, Review
 
 
 class RegisterForm(forms.ModelForm):
@@ -64,3 +66,57 @@ class RegisterForm(forms.ModelForm):
         if password and password2 and password != password2:
             raise forms.ValidationError('Пароли не совпадают')
         return cleaned_data
+
+
+class ApplicationForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ['course_type', 'start_date', 'payment_method']
+        widgets = {
+            'course_type': forms.Select(attrs={'class': 'form-select'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'payment_method': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'course_type': 'Тип курса',
+            'start_date': 'Дата начала обучения',
+            'payment_method': 'Способ оплаты',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['start_date'].widget.attrs['min'] = timezone.now().date().isoformat()
+
+    def clean_start_date(self):
+        start_date = self.cleaned_data['start_date']
+        if start_date < timezone.now().date():
+            raise forms.ValidationError('Дата начала не может быть в прошлом')
+        return start_date
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Напишите ваш отзыв...',
+            }),
+        }
+        labels = {
+            'text': 'Отзыв',
+        }
+
+
+class StatusUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ['status']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+        }
+        labels = {
+            'status': 'Статус',
+        }

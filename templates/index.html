@@ -4,7 +4,8 @@
 {% block title %}Учусь РФ — Главная{% endblock %}
 
 {% block content %}
-<div class="hero-section text-center py-5">
+
+<div class="text-center mb-5">
     <h1 class="display-4 fw-bold text-primary">Добро пожаловать на портал «Учусь РФ»</h1>
     <p class="lead text-muted mt-3">Повышайте квалификацию, проходите переподготовку и обучение по охране труда онлайн</p>
     {% if not user.is_authenticated %}
@@ -13,54 +14,29 @@
             <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">Войти</a>
         </div>
     {% endif %}
+    <img src="{% static 'img/banner.svg' %}" alt="Дистанционное обучение" class="img-fluid rounded-3 shadow-sm w-100 mt-4" style="max-height: 600px; object-fit: cover;">
 </div>
 
-<div class="row g-4 mt-3">
+<div class="row g-4 mb-5">
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="display-6 fw-bold text-primary mb-3">01</div>
-                <h5 class="card-title">Повышение квалификации</h5>
-                <p class="card-text text-muted">Актуальные программы для специалистов всех отраслей</p>
-            </div>
+        <div class="card border-0 shadow-sm text-center p-4 h-100">
+            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px; font-size: 24px; font-weight: 700;">01</div>
+            <h5>Повышение квалификации</h5>
+            <p class="text-muted mb-0">Актуальные программы для специалистов всех отраслей</p>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="display-6 fw-bold text-primary mb-3">02</div>
-                <h5 class="card-title">Переподготовка</h5>
-                <p class="card-text text-muted">Получите новую профессию в удобном формате</p>
-            </div>
+        <div class="card border-0 shadow-sm text-center p-4 h-100">
+            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px; font-size: 24px; font-weight: 700;">02</div>
+            <h5>Переподготовка</h5>
+            <p class="text-muted mb-0">Получите новую профессию в удобном формате</p>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <div class="display-6 fw-bold text-primary mb-3">03</div>
-                <h5 class="card-title">Охрана труда</h5>
-                <p class="card-text text-muted">Обучение и проверка знаний требований охраны труда</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-5 mb-5">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h4 class="card-title mb-3">Почему выбирают нас?</h4>
-                <div class="row">
-                    <div class="col-sm-6 mb-3">
-                        <p class="mb-1 text-primary"><strong>—</strong> Лицензированные программы</p>
-                        <p class="mb-1 text-primary"><strong>—</strong> Опытные преподаватели-практики</p>
-                    </div>
-                    <div class="col-sm-6 mb-3">
-                        <p class="mb-1 text-primary"><strong>—</strong> Гибкий график обучения</p>
-                        <p class="mb-1 text-primary"><strong>—</strong> Документы установленного образца</p>
-                    </div>
-                </div>
-            </div>
+        <div class="card border-0 shadow-sm text-center p-4 h-100">
+            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px; font-size: 24px; font-weight: 700;">03</div>
+            <h5>Охрана труда</h5>
+            <p class="text-muted mb-0">Обучение и проверка знаний требований охраны труда</p>
         </div>
     </div>
 </div>

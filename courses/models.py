@@ -15,7 +15,7 @@ class Profile(models.Model):
         return self.full_name
 
 
-# Модель заявки на обучение
+# Модель заявки
 class Application(models.Model):
     class CourseType(models.TextChoices):
         QUALIFICATION = 'qualification', 'Повышение квалификации'
@@ -23,8 +23,9 @@ class Application(models.Model):
         OCCUPATIONAL_SAFETY = 'safety', 'Охрана труда'
 
     class PaymentMethod(models.TextChoices):
-        CASH = 'cash', 'Наличные'
-        CARD = 'card', 'Банковская карта'
+        CASH = 'qrcode', 'Предоплата по QR-коду'
+        CARD = 'card', 'Оплата картой МИР'
+        OFICE = 'ofice', 'Постоплата в офисе организации'
 
     class Status(models.TextChoices):
         NEW = 'new', 'Новая'
@@ -45,3 +46,19 @@ class Application(models.Model):
 
     def __str__(self):
         return f'{self.get_course_type_display()} - {self.user.username}'
+
+
+# Модель отзыва
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    application = models.OneToOneField(Application, on_delete=models.CASCADE, related_name='review')
+    text = models.TextField('Текст отзыва')
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Отзыв от {self.user.username} на заявку #{self.application.id}'

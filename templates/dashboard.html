@@ -18,16 +18,16 @@
                 <div id="slider" class="slider">
                     <div class="slider-inner">
                         <div class="slide active">
-                            <img src="{% static 'img/slide1.jpg' %}" alt="Обучение" class="slide-img">
+                            <img src="{% static 'img/slide1.svg' %}" alt="Слайд1" class="slide-img">
                         </div>
                         <div class="slide">
-                            <img src="{% static 'img/slide2.jpg' %}" alt="Курсы" class="slide-img">
+                            <img src="{% static 'img/slide2.svg' %}" alt="Слайд2" class="slide-img">
                         </div>
                         <div class="slide">
-                            <img src="{% static 'img/slide3.jpg' %}" alt="Знания" class="slide-img">
+                            <img src="{% static 'img/slide3.svg' %}" alt="Слайд3" class="slide-img">
                         </div>
                         <div class="slide">
-                            <img src="{% static 'img/slide4.jpg' %}" alt="Развитие" class="slide-img">
+                            <img src="{% static 'img/slide4.svg' %}" alt="Слайд4" class="slide-img">
                         </div>
                     </div>
                     <button class="slider-btn slider-prev" onclick="prevSlide()">&#10094;</button>
@@ -79,6 +79,25 @@
                 <a href="{% url 'application_create' %}" class="btn btn-primary">Создать первую заявку</a>
             {% endif %}
         </div>
+    </div>
+{% endif %}
+{% if reviews %}
+    <h4 class="fw-bold mt-4 mb-3">Мои отзывы</h4>
+    <div class="row g-3 mb-4">
+        {% for review in reviews %}
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-0">Заявка №{{ review.application.id }}</h6>
+                            <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                        </div>
+                        <p class="text-muted small mb-2">{{ review.application.get_course_type_display }}</p>
+                        <p class="mb-0">{{ review.text }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endif %}
 {% endblock %}
